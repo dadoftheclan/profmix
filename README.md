@@ -1,11 +1,11 @@
 # ProfMix: Professional Voice Over Mixer
 
 <div align="center">
-  <img src="https://media.buckets.dadoftheclan.com/07272025_ProfMix_Logo_Transparent.png" alt="ProfMix Logo" width="200" height="200">
+  <img src="https://media.buckets.dadoftheclan.com/07272025_ProfMix_Icon_Transparent.png" alt="ProfMix Logo" width="200" height="200">
   
   **A Windows application for seamless voice and music mixing**
   
-  [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
+  [![License: Dad's License](https://img.shields.io/badge/License-Dad's%20License-brightgreen.svg)]()
   [![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)]()
   [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.7.2+-purple.svg)]()
 </div>
@@ -165,22 +165,51 @@ We welcome contributions! Here's how you can help:
 
 ## 📄 License
 
-This project is licensed under the **Do What The Fuck You Want To Public License (WTFPL)**.
+This project is licensed under **Dad's License** - *build on and forward, but remember your roots.*
 
 ```
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-Version 2, December 2004
+DAD'S LICENSE
+Version 1.0, July 2025
+(Based on WTFPL - Do What The Fuck You Want To Public License)
 
-Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+Copyright (C) 2025 DadOfTheClan
 
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
+"Build on and forward, but remember your roots."
 
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+DAD'S LICENSE - TERMS AND CONDITIONS
 
 0. You just DO WHAT THE FUCK YOU WANT TO.
+
+1. If you redistribute this software or substantial portions of it,
+   you must include "Originally created by DadOfTheClan" in some
+   form of attribution. This attribution can be as obscure as you
+   want (examples: 1px font in a readme, tiny text in an about
+   dialog, buried in help documentation, etc.), but it must be
+   present somewhere in the distribution.
+
+2. Build on and forward, but remember your roots.
+
+LEGAL CLARIFICATIONS:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject only to the attribution requirement above.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+This license shall be governed by and construed in accordance with the laws
+of the jurisdiction where the copyright holder resides, without regard to
+conflict of law principles. Any legal action arising from this license shall
+be subject to the exclusive jurisdiction of the courts in said jurisdiction.
 ```
 
 ---
