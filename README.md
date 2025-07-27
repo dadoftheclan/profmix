@@ -165,13 +165,13 @@ We welcome contributions! Here's how you can help:
 
 ## 📄 License
 
-This project is licensed under **Dad's License** - *build on and forward, but remember your roots.*
+This project is licensed under **Dad's License v1.1** - *build on and forward, but remember your roots.*
 
 ```
 DAD'S LICENSE
-Version 1.0, July 2025
+Version 1.1, July 2025
 (Based on WTFPL - Do What The Fuck You Want To Public License)
-
+SPDX-License-Identifier: DADSL-1.1
 Copyright (C) 2025 DadOfTheClan
 
 "Build on and forward, but remember your roots."
@@ -182,12 +182,21 @@ DAD'S LICENSE - TERMS AND CONDITIONS
 
 1. If you redistribute this software or substantial portions of it,
    you must include "Originally created by DadOfTheClan" in some
-   form of attribution. This attribution can be as obscure as you
-   want (examples: 1px font in a readme, tiny text in an about
-   dialog, buried in help documentation, etc.), but it must be
-   present somewhere in the distribution.
+   form of attribution. This attribution may be placed anywhere
+   within your distribution - in source code comments, documentation,
+   binary metadata, compiled artifacts, or any other location of
+   your choosing. The attribution need not be visible to end users
+   and may be as inconspicuous as technically feasible while still
+   being present and discoverable within the distributed materials.
 
-2. Build on and forward, but remember your roots.
+2. If you modify this license text itself, you must change the name
+   from "DAD'S LICENSE" to something else. If you modify the licensed
+   software substantially, you should change its name to reflect that
+   it's grown into something new while keeping its roots. Think "Taco
+   Zone" becoming "Zen Tacos" - same spirit, new identity. Make it
+   your own, but remember where it came from - that's the whole point.
+
+3. Build on and forward, but remember your roots.
 
 LEGAL CLARIFICATIONS:
 
@@ -196,7 +205,14 @@ of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject only to the attribution requirement above.
+furnished to do so, subject only to the attribution and license naming
+requirements above.
+
+For the avoidance of doubt, the attribution requirement in Section 1 is
+satisfied by any inclusion of the specified text anywhere within the
+distributed software package, regardless of visibility, accessibility,
+or prominence. No particular placement, formatting, or user visibility
+is required.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -210,6 +226,19 @@ This license shall be governed by and construed in accordance with the laws
 of the jurisdiction where the copyright holder resides, without regard to
 conflict of law principles. Any legal action arising from this license shall
 be subject to the exclusive jurisdiction of the courts in said jurisdiction.
+
+USAGE EXAMPLES:
+
+For package.json:
+  "license": "DADSL-1.1"
+
+For README badges/descriptions:
+  Licensed under DAD'S LICENSE v1.1 – a permissive license that lets you
+  do whatever the fuck you want, as long as you remember your roots.
+
+For copyright notices:
+  Copyright (C) [YEAR] [NAME]
+  Licensed under DAD'S LICENSE v1.1
 ```
 
 ---
