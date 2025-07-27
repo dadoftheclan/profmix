@@ -1,0 +1,129 @@
+﻿<Window x:Class="App_Mix.Windows.wndException"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Critical Error" Height="500" Width="850"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" Background="#FF1E1E1E"
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="False">
+
+    <Window.Resources>
+        <!-- Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF5BA0F2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FF3A80D2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#FF666666"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="10,0,0,15">
+            <!-- Header Banner -->
+            <Border Background="#FFFF5555"
+            CornerRadius="10"
+            Padding="15,10"
+            Margin="0,0,0,10">
+                <TextBlock Text="❌ A critical error has occurred"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="White"/>
+            </Border>
+
+            <!-- Primary: Must restart/close -->
+            <TextBlock TextWrapping="Wrap"
+               FontSize="14"
+               Foreground="#FFDDDDDD"
+               Margin="5,0,0,8"
+               FontWeight="Bold">
+        This application must now be restarted or closed.
+            </TextBlock>
+
+            <!-- Secondary: Support email -->
+            <TextBlock TextWrapping="Wrap"
+               FontSize="13"
+               Foreground="#FFCCCCCC"
+               Margin="5,0,0,0">
+        If the issue persists, please send the crash log to
+        <Run Text=" bugs@dev.dadoftheclan.com" Foreground="#FF90CAF9" TextDecorations="Underline"/>
+        so we can investigate and fix the problem.
+            </TextBlock>
+        </StackPanel>
+
+
+        <!-- Exception Details - CRT Style -->
+        <Border Grid.Row="1"
+                Background="Black"
+                BorderThickness="1"
+                BorderBrush="#FF444444"
+                CornerRadius="6"
+                Padding="8">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <TextBox x:Name="TxtErrorDetails"
+                         Background="Black"
+                         BorderThickness="0"
+                         Foreground="#00FF00"
+                         FontFamily="Consolas, Courier New, Lucida Console"
+                         FontSize="13"
+                         IsReadOnly="True"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Footer Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="📋 Copy Details"
+                    Click="BtnCopy_Click"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Background="#FF4A90E2"/>
+
+            <Button Content="📄 Open Crash Log"
+                    Click="BtnOpenLog_Click"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Background="#FF888888"/>
+
+            <Button Content="🔁 Restart"
+                    Click="BtnRestart_Click"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Background="#FF50C878"/>
+
+            <Button Content="❌ Exit"
+                    Click="BtnExit_Click"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Background="#FFFF5555"
+                    Margin="0"/>
+        </StackPanel>
+    </Grid>
+</Window>

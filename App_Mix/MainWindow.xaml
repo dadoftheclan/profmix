@@ -1,0 +1,493 @@
+﻿<Window x:Class="App_Mix.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:App_Mix"
+        mc:Ignorable="d"
+        Title="Audio Mixer Pro" Height="600" Width="900" MinHeight="500" MinWidth="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF1E1E1E">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF4A90E2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF5BA0F2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF3A80D2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#FF666666"/>
+                                <Setter Property="Foreground" Value="#FFAAAAAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Browse Button Style -->
+        <Style x:Key="BrowseButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FF50C878"/>
+            <Setter Property="Width" Value="90"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF60D888"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF40B868"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Preview Button Style -->
+        <Style x:Key="PreviewButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FFFF6B35"/>
+            <Setter Property="Width" Value="90"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFFF7B45"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FFEF5B25"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF444444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Focusable="false" 
+                                        HorizontalScrollBarVisibility="Hidden" 
+                                        VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF4A90E2"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF4A90E2"/>
+                                <Setter TargetName="border" Property="Background" Value="#FF353535"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern GroupBox Style -->
+        <Style x:Key="ModernGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" 
+                                    Background="#FF4A90E2" 
+                                    CornerRadius="6,6,0,0" 
+                                    Padding="15,8">
+                                <ContentPresenter ContentSource="Header" 
+                                                TextBlock.Foreground="White"
+                                                TextBlock.FontWeight="SemiBold"/>
+                            </Border>
+                            <Border Grid.Row="1" 
+                                    Background="#FF2D2D2D" 
+                                    CornerRadius="0,0,6,6" 
+                                    BorderBrush="#FF444444" 
+                                    BorderThickness="1,0,1,1">
+                                <ContentPresenter Margin="15"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern Slider Style -->
+        <Style x:Key="ModernSliderStyle" TargetType="Slider">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Track x:Name="PART_Track" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{x:Null}" Background="#FF4A90E2" Height="6"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{x:Null}" Background="#FF444444" Height="6"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{x:Null}" Background="White" Width="18" Height="18">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="{TemplateBinding Background}" 
+                                                       Stroke="#FF4A90E2" 
+                                                       StrokeThickness="2"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" MinHeight="120"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" CornerRadius="10" Margin="0,0,0,15" Padding="15">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF4A90E2" Offset="0"/>
+                    <GradientStop Color="#FF357ABD" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="🎵" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <StackPanel>
+                    <TextBlock Text="Audio Mixer Pro" 
+                               FontSize="20" FontWeight="Bold" 
+                               Foreground="White"/>
+                    <TextBlock Text="Professional IVR Prompt Creation Tool" 
+                               FontSize="11" 
+                               Foreground="#FFCCDDFF"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Voice File Selection -->
+        <GroupBox Grid.Row="1" Header="🎤 Voice Recording" Margin="0,0,0,10" Style="{StaticResource ModernGroupBoxStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox x:Name="TxtVoicePath" Grid.Column="0" 
+                         Style="{StaticResource ModernTextBoxStyle}"
+                         IsReadOnly="True" Margin="0,0,10,0"/>
+                <Button x:Name="BtnSelectVoice" Grid.Column="1" 
+                        Content="Browse" 
+                        Click="BtnSelectVoice_Click" 
+                        Style="{StaticResource BrowseButtonStyle}"
+                        Margin="0,0,10,0"/>
+                <Button x:Name="BtnPreviewVoice" Grid.Column="2" 
+                        Content="▶ Preview" 
+                        Click="BtnPreviewVoice_Click" 
+                        Style="{StaticResource PreviewButtonStyle}"
+                        IsEnabled="False"
+                        Tag="Play"/>
+
+                <Border Grid.Row="1" Grid.ColumnSpan="3" 
+                        Background="#FF373737" 
+                        CornerRadius="6" 
+                        Margin="0,15,0,0" 
+                        Padding="15">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Volume:" 
+                                   VerticalAlignment="Center" 
+                                   Margin="0,0,15,0" 
+                                   Foreground="White" 
+                                   FontWeight="SemiBold"/>
+                        <Slider x:Name="SliderVoiceVolume" 
+                                Width="250" 
+                                Minimum="0" Maximum="100" Value="100" 
+                                Style="{StaticResource ModernSliderStyle}"
+                                VerticalAlignment="Center"/>
+                        <Border Background="#FF4A90E2" 
+                                CornerRadius="12" 
+                                Padding="10,4" 
+                                Margin="15,0,0,0">
+                            <TextBlock Text="{Binding ElementName=SliderVoiceVolume, Path=Value, StringFormat={}{0:F0}%}" 
+                                       Foreground="White" 
+                                       FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </GroupBox>
+
+        <!-- Music File Selection -->
+        <GroupBox Grid.Row="2" Header="🎶 Background Music" Margin="0,0,0,10" Style="{StaticResource ModernGroupBoxStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox x:Name="TxtMusicPath" Grid.Column="0" 
+                         Style="{StaticResource ModernTextBoxStyle}"
+                         IsReadOnly="True" Margin="0,0,10,0"/>
+                <Button x:Name="BtnSelectMusic" Grid.Column="1" 
+                        Content="Browse" 
+                        Click="BtnSelectMusic_Click" 
+                        Style="{StaticResource BrowseButtonStyle}"
+                        Margin="0,0,10,0"/>
+                <Button x:Name="BtnPreviewMusic" Grid.Column="2" 
+                        Content="▶ Preview" 
+                        Click="BtnPreviewMusic_Click" 
+                        Style="{StaticResource PreviewButtonStyle}"
+                        IsEnabled="False"
+                        Tag="Play"/>
+
+                <Border Grid.Row="1" Grid.ColumnSpan="3" 
+                        Background="#FF373737" 
+                        CornerRadius="6" 
+                        Margin="0,15,0,0" 
+                        Padding="15">
+                    <StackPanel>
+                        <!-- Volume Control -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <TextBlock Text="Volume:" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0,0,15,0" 
+                                       Foreground="White" 
+                                       FontWeight="SemiBold"
+                                       Width="80"/>
+                            <Slider x:Name="SliderMusicVolume" 
+                                    Width="200" 
+                                    Minimum="0" Maximum="100" Value="30" 
+                                    Style="{StaticResource ModernSliderStyle}"
+                                    VerticalAlignment="Center"/>
+                            <Border Background="#FF4A90E2" 
+                                    CornerRadius="12" 
+                                    Padding="8,4" 
+                                    Margin="15,0,0,0">
+                                <TextBlock Text="{Binding ElementName=SliderMusicVolume, Path=Value, StringFormat={}{0:F0}%}" 
+                                           Foreground="White" 
+                                           FontWeight="Bold"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Start Offset Control -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <TextBlock Text="Start at:" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0,0,15,0" 
+                                       Foreground="White" 
+                                       FontWeight="SemiBold"
+                                       Width="80"/>
+                            <Slider x:Name="SliderMusicOffset" 
+                                    Width="200" 
+                                    Minimum="0" Maximum="120" Value="0" 
+                                    Style="{StaticResource ModernSliderStyle}"
+                                    VerticalAlignment="Center"/>
+                            <Border Background="#FFFF6B35" 
+                                    CornerRadius="12" 
+                                    Padding="8,4" 
+                                    Margin="15,0,0,0">
+                                <TextBlock Text="{Binding ElementName=SliderMusicOffset, Path=Value, StringFormat={}{0:F0}s}" 
+                                           Foreground="White" 
+                                           FontWeight="Bold"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Buffer Length Control -->
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Fade Out:" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0,0,15,0" 
+                                       Foreground="White" 
+                                       FontWeight="SemiBold"
+                                       Width="80"/>
+                            <Slider x:Name="SliderBufferLength" 
+                                    Width="200" 
+                                    Minimum="0" Maximum="30" Value="10" 
+                                    Style="{StaticResource ModernSliderStyle}"
+                                    VerticalAlignment="Center"/>
+                            <Border Background="#FF50C878" 
+                                    CornerRadius="12" 
+                                    Padding="8,4" 
+                                    Margin="15,0,0,0">
+                                <TextBlock Text="{Binding ElementName=SliderBufferLength, Path=Value, StringFormat={}{0:F0}s}" 
+                                           Foreground="White" 
+                                           FontWeight="Bold"/>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </GroupBox>
+
+        <!-- Output File Selection -->
+        <GroupBox Grid.Row="3" Header="💾 Output File" Margin="0,0,0,10" Style="{StaticResource ModernGroupBoxStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="TxtOutputPath" Grid.Column="0" 
+                         Style="{StaticResource ModernTextBoxStyle}"
+                         IsReadOnly="True" Margin="0,0,10,0"/>
+                <Button x:Name="BtnSelectOutputPath" Grid.Column="1" 
+                        Content="📁 Save As" 
+                        Click="BtnSelectOutputPath_Click" 
+                        Style="{StaticResource BrowseButtonStyle}"
+                        Width="110"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="4" Background="#FF373737" CornerRadius="8" Padding="15" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="BtnMix" 
+                        Content="🎛️ Mix Audio Files" 
+                        Click="BtnMix_Click" 
+                        Width="160" Height="40" 
+                        FontSize="14"
+                        Background="#FF50C878"
+                        Margin="0,0,15,0"
+                        Style="{StaticResource ModernButtonStyle}">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" 
+                                    Background="{TemplateBinding Background}" 
+                                    CornerRadius="6"
+                                    BorderThickness="0">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FF60D888"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FF40B868"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="BtnPreviewMixed" 
+                        Content="🔊 Preview Result" 
+                        Click="BtnPreviewMixed_Click" 
+                        Width="160" Height="40" 
+                        FontSize="14"
+                        Background="#FFFF6B35"
+                        IsEnabled="False"
+                        Tag="Play"
+                        Style="{StaticResource ModernButtonStyle}">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" 
+                                    Background="{TemplateBinding Background}" 
+                                    CornerRadius="6"
+                                    BorderThickness="0">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFFF7B45"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFEF5B25"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="border" Property="Background" Value="#FF666666"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Instructions -->
+        <GroupBox Grid.Row="5" Header="📋 Quick Start Guide" Style="{StaticResource ModernGroupBoxStyle}">
+            <Border Background="#FF404040" CornerRadius="6" Padding="15">
+                <StackPanel>
+                    <TextBlock Foreground="White" FontSize="13" TextWrapping="Wrap" LineHeight="22">
+                        <Run FontWeight="Bold" Foreground="#FF4A90E2">Step 1:</Run>
+                        <Run>Select your voice recording file (WAV or MP3)</Run>
+                        <LineBreak/>
+                        <Run FontWeight="Bold" Foreground="#FF4A90E2">Step 2:</Run>
+                        <Run>Choose background music file (WAV or MP3)</Run>
+                        <LineBreak/>
+                        <Run FontWeight="Bold" Foreground="#FF4A90E2">Step 3:</Run>
+                        <Run>Adjust volume levels using the sliders</Run>
+                        <LineBreak/>
+                        <Run FontWeight="Bold" Foreground="#FF4A90E2">Step 4:</Run>
+                        <Run>Set output file location</Run>
+                        <LineBreak/>
+                        <Run FontWeight="Bold" Foreground="#FF4A90E2">Step 5:</Run>
+                        <Run>Click "Mix Audio Files" to create your professional IVR prompt</Run>
+                    </TextBlock>
+
+                    <Border Background="#FF4A90E2" CornerRadius="4" Margin="0,10,0,0" Padding="10">
+                        <TextBlock Foreground="White" FontSize="11" FontWeight="SemiBold">
+                            💡 Pro Tip: Use the Preview buttons to test your audio before mixing!
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </GroupBox>
+    </Grid>
+</Window>

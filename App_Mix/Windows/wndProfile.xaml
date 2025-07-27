@@ -1,0 +1,642 @@
+﻿<Window x:Class="App_Mix.Windows.wndProfile"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:App_Mix.Windows"
+        mc:Ignorable="d"
+        Title="Audio Profile Manager" Height="750" Width="1000" MinHeight="650" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF1E1E1E">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF00FF90"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Lime" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00FF66"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00DD44"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#FF666666"/>
+                                <Setter Property="Foreground" Value="#FFAAAAAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Success Button Style -->
+        <Style x:Key="SuccessButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FF00FF90"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF00FF66"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF00DD44"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Warning Button Style -->
+        <Style x:Key="WarningButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FF66FF33"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF77FF44"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF55EE22"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Danger Button Style -->
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FFFF4444"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFFF5555"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FFEE3333"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF00FF66"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Focusable="false" 
+                                        HorizontalScrollBarVisibility="Hidden" 
+                                        VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF00FF90"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF00FF90"/>
+                                <Setter TargetName="border" Property="Background" Value="#FF353535"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF00FF66"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Focusable="false"
+                                        IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                        ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="border" 
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="4">
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.3"/>
+                                            </Border.Effect>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="30"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Path x:Name="Arrow" Grid.Column="1" 
+                                                      Fill="#FF00FF90" 
+                                                      HorizontalAlignment="Center" 
+                                                      VerticalAlignment="Center" 
+                                                      Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FF00FF90"/>
+                                                <Setter TargetName="border" Property="Background" Value="#FF353535"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#FF404040"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite" 
+                                            IsHitTestVisible="False" 
+                                            Content="{TemplateBinding SelectionBoxItem}"
+                                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                            Margin="10,8,35,8"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_EditableTextBox" 
+                                   Style="{x:Null}" 
+                                   HorizontalAlignment="Left" 
+                                   VerticalAlignment="Center" 
+                                   Margin="10,8,35,8"
+                                   Focusable="True" 
+                                   Background="Transparent"
+                                   Foreground="White"
+                                   BorderThickness="0"
+                                   Visibility="Hidden"
+                                   IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup x:Name="Popup" 
+                                 Placement="Bottom"
+                                 IsOpen="{TemplateBinding IsDropDownOpen}"
+                                 AllowsTransparency="True" 
+                                 Focusable="False"
+                                 PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" 
+                                    SnapsToDevicePixels="True"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" 
+                                          Background="#FF2D2D2D" 
+                                          BorderThickness="1"
+                                          BorderBrush="#FF00FF66"
+                                          CornerRadius="4">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="Lime" BlurRadius="8" ShadowDepth="0" Opacity="0.4"/>
+                                        </Border.Effect>
+                                    </Border>
+                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True" 
+                                                Background="Transparent"
+                                                BorderThickness="0">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="10,8"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="border" 
+                                          Background="{TemplateBinding Background}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          Padding="{TemplateBinding Padding}"
+                                          CornerRadius="2"
+                                          Margin="2">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsHighlighted" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#FF00FF90"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#FF00DD66"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsSelected" Value="True"/>
+                                                <Condition Property="IsHighlighted" Value="True"/>
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="border" Property="Background" Value="#FF00FF66"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </MultiTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern GroupBox Style -->
+        <Style x:Key="ModernGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" 
+                                    Background="#FF00FF90" 
+                                    CornerRadius="6,6,0,0" 
+                                    Padding="15,8">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Lime" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                                </Border.Effect>
+                                <ContentPresenter ContentSource="Header" 
+                                                TextBlock.Foreground="Black"
+                                                TextBlock.FontWeight="SemiBold"/>
+                            </Border>
+                            <Border Grid.Row="1" 
+                                    Background="#FF2D2D2D" 
+                                    CornerRadius="0,0,6,6" 
+                                    BorderBrush="#FF00FF66" 
+                                    BorderThickness="1,0,1,1">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.2"/>
+                                </Border.Effect>
+                                <ContentPresenter Margin="15"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ListBox Style -->
+        <Style x:Key="ModernListBoxStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF00FF66"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ScrollViewer Focusable="false" Padding="5">
+                                <StackPanel Margin="0" IsItemsHost="True"/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ListBoxItem Style -->
+        <Style x:Key="ModernListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF404040"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00FF90"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel - Profile List -->
+        <GroupBox Grid.Column="0" Header="🗂️ Audio Profiles" Style="{StaticResource ModernGroupBoxStyle}" Margin="0,0,10,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Profile List -->
+                <ListBox x:Name="LstProfiles" Grid.Row="0" 
+                         Style="{StaticResource ModernListBoxStyle}"
+                         ItemContainerStyle="{StaticResource ModernListBoxItemStyle}"
+                         SelectionChanged="LstProfiles_SelectionChanged"
+                         Margin="0,0,0,10">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13"/>
+                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#FFCCCCCC" Margin="0,2,0,0"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <Border Background="#FF00FF90" CornerRadius="8" Padding="4,2" Margin="0,0,4,0">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.4"/>
+                                        </Border.Effect>
+                                        <TextBlock Text="{Binding FormatDisplay}" FontSize="9" Foreground="Black"/>
+                                    </Border>
+                                    <Border Background="#FF66FF33" CornerRadius="8" Padding="4,2">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.4"/>
+                                        </Border.Effect>
+                                        <TextBlock Text="{Binding MaxSizeDisplay}" FontSize="9" Foreground="Black"/>
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Profile Management Buttons -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="BtnNewProfile" Content="➕ New" Width="70" Height="35" 
+                            Style="{StaticResource SuccessButtonStyle}" 
+                            Click="BtnNewProfile_Click" Margin="0,0,5,0"/>
+                    <Button x:Name="BtnDeleteProfile" Content="🗑️ Delete" Width="70" Height="35" 
+                            Style="{StaticResource DangerButtonStyle}" 
+                            Click="BtnDeleteProfile_Click" Margin="5,0,0,0" IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Right Panel - Profile Details -->
+        <Grid Grid.Column="1" Margin="10,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" CornerRadius="10" Margin="0,0,0,15" Padding="15">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF00FF90" Offset="0"/>
+                        <GradientStop Color="#FF00DD66" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect Color="Lime" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="⚙️" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <StackPanel>
+                        <TextBlock Text="Profile Configuration" 
+                                   FontSize="20" FontWeight="Bold" 
+                                   Foreground="Black"/>
+                        <TextBlock Text="Configure audio settings for different PBX systems" 
+                                   FontSize="11" 
+                                   Foreground="#FF003300"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Basic Information -->
+            <GroupBox Grid.Row="1" Header="📝 Basic Information" Style="{StaticResource ModernGroupBoxStyle}" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Profile Name -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Profile Name:" 
+                               VerticalAlignment="Center" Margin="0,0,15,0" 
+                               Foreground="White" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtProfileName" Grid.Row="0" Grid.Column="1" 
+                             Style="{StaticResource ModernTextBoxStyle}" 
+                             Margin="0,0,0,10" TextChanged="TxtProfileName_TextChanged"/>
+
+                    <!-- Description -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Description:" 
+                               VerticalAlignment="Top" Margin="0,8,15,0" 
+                               Foreground="White" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtDescription" Grid.Row="1" Grid.Column="1" 
+                             Style="{StaticResource ModernTextBoxStyle}" 
+                             Height="60" TextWrapping="Wrap" AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto" TextChanged="TxtDescription_TextChanged"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Audio Format Settings -->
+            <GroupBox Grid.Row="2" Header="🎵 Audio Format Settings" Style="{StaticResource ModernGroupBoxStyle}" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Sample Rate -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Sample Rate:" 
+                               VerticalAlignment="Center" Margin="0,0,10,0" 
+                               Foreground="White" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="CmbSampleRate" Grid.Row="0" Grid.Column="1" 
+                              Style="{StaticResource ModernComboBoxStyle}" 
+                              Margin="0,0,10,10" SelectionChanged="AudioFormat_Changed">
+                        <ComboBoxItem Content="8000 Hz" Tag="8000"/>
+                        <ComboBoxItem Content="16000 Hz" Tag="16000"/>
+                        <ComboBoxItem Content="22050 Hz" Tag="22050"/>
+                        <ComboBoxItem Content="44100 Hz" Tag="44100"/>
+                        <ComboBoxItem Content="48000 Hz" Tag="48000"/>
+                    </ComboBox>
+
+                    <!-- Bit Depth -->
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Bit Depth:" 
+                               VerticalAlignment="Center" Margin="0,0,10,0" 
+                               Foreground="White" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="CmbBitDepth" Grid.Row="0" Grid.Column="3" 
+                              Style="{StaticResource ModernComboBoxStyle}" 
+                              Margin="0,0,0,10" SelectionChanged="AudioFormat_Changed">
+                        <ComboBoxItem Content="8-bit" Tag="8"/>
+                        <ComboBoxItem Content="16-bit" Tag="16"/>
+                        <ComboBoxItem Content="24-bit" Tag="24"/>
+                        <ComboBoxItem Content="32-bit" Tag="32"/>
+                    </ComboBox>
+
+                    <!-- Channels -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Channels:" 
+                               VerticalAlignment="Center" Margin="0,0,10,0" 
+                               Foreground="White" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="CmbChannels" Grid.Row="1" Grid.Column="1" 
+                              Style="{StaticResource ModernComboBoxStyle}" 
+                              Margin="0,0,10,10" SelectionChanged="AudioFormat_Changed">
+                        <ComboBoxItem Content="Mono (1)" Tag="1"/>
+                        <ComboBoxItem Content="Stereo (2)" Tag="2"/>
+                    </ComboBox>
+
+                    <!-- Max File Size -->
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Max Size (MB):" 
+                               VerticalAlignment="Center" Margin="0,0,10,0" 
+                               Foreground="White" FontWeight="SemiBold"/>
+                    <TextBox x:Name="TxtMaxSize" Grid.Row="1" Grid.Column="3" 
+                             Style="{StaticResource ModernTextBoxStyle}" 
+                             Margin="0,0,0,10" Text="10" TextChanged="TxtMaxSize_TextChanged"/>
+
+                    <!-- Format Preview -->
+                    <Border Grid.Row="2" Grid.ColumnSpan="4" 
+                            Background="#FF404040" CornerRadius="4" Padding="10">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.2"/>
+                        </Border.Effect>
+                        <TextBlock x:Name="TxtFormatPreview"
+                                   Text="Format: WAV (PCM, 8kHz, 16-bit, Mono, max: 10MB)"
+                                   Foreground="#FFCCCCCC" 
+                                   FontFamily="Consolas" FontSize="11"/>
+                    </Border>
+                </Grid>
+            </GroupBox>
+
+            <!-- Preset Templates -->
+            <GroupBox Grid.Row="3" Header="🏭 Quick Templates" Style="{StaticResource ModernGroupBoxStyle}" Margin="0,0,0,10">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="Btn3CX" Content="3CX PBX" Width="90" Height="35" 
+                            Style="{StaticResource ModernButtonStyle}" 
+                            Click="BtnTemplate_Click" Margin="0,0,5,0" Tag="3CX"/>
+                    <Button x:Name="BtnFreePBX" Content="FreePBX" Width="90" Height="35" 
+                            Style="{StaticResource ModernButtonStyle}" 
+                            Click="BtnTemplate_Click" Margin="5,0,5,0" Tag="FreePBX"/>
+                    <Button x:Name="BtnSangoma" Content="Sangoma" Width="90" Height="35" 
+                            Style="{StaticResource ModernButtonStyle}" 
+                            Click="BtnTemplate_Click" Margin="5,0,5,0" Tag="Sangoma"/>
+                    <Button x:Name="BtnGenesys" Content="Genesys" Width="90" Height="35" 
+                            Style="{StaticResource ModernButtonStyle}" 
+                            Click="BtnTemplate_Click" Margin="5,0,5,0" Tag="Genesys"/>
+                    <Button x:Name="Btn8x8" Content="8x8" Width="70" Height="35" 
+                            Style="{StaticResource ModernButtonStyle}" 
+                            Click="BtnTemplate_Click" Margin="5,0,0,0" Tag="8x8"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Usage Instructions -->
+            <GroupBox Grid.Row="4" Header="📋 Usage Instructions" Style="{StaticResource ModernGroupBoxStyle}">
+                <Border Background="#FF404040" CornerRadius="6" Padding="15">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.1"/>
+                    </Border.Effect>
+                    <TextBlock Foreground="White" FontSize="12" TextWrapping="Wrap" LineHeight="20">
+                        <Run FontWeight="Bold" Foreground="#FF00FF90">Creating Profiles:</Run>
+                        <Run>Click "New" to create a custom profile, or use Quick Templates for common PBX systems.</Run>
+                        <LineBreak/><LineBreak/>
+                        <Run FontWeight="Bold" Foreground="#FF00FF90">Audio Settings:</Run>
+                        <Run>Configure sample rate, bit depth, channels, and file size limits to match your PBX requirements.</Run>
+                        <LineBreak/><LineBreak/>
+                        <Run FontWeight="Bold" Foreground="#FF00FF90">Template Guide:</Run>
+                        <Run>• 3CX: 8kHz, 16-bit, Mono, 10MB limit</Run>
+                        <LineBreak/>
+                        <Run>• FreePBX: 8kHz/44.1kHz, 16-bit, Mono/Stereo, 50MB limit</Run>
+                        <LineBreak/>
+                        <Run>• Others: Varies by system - customize as needed</Run>
+                    </TextBlock>
+                </Border>
+            </GroupBox>
+
+            <!-- Action Buttons -->
+            <Border Grid.Row="5" Background="#FF373737" CornerRadius="8" Padding="15" Margin="0,10,0,0">
+                <Border.Effect>
+                    <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="BtnSave" Content="💾 Save Profile" Width="120" Height="40" 
+                            Style="{StaticResource SuccessButtonStyle}" 
+                            Click="BtnSave_Click" Margin="0,0,10,0" IsEnabled="False"/>
+                    <Button x:Name="BtnCancel" Content="❌ Cancel" Width="100" Height="40" 
+                            Style="{StaticResource DangerButtonStyle}" 
+                            Click="BtnCancel_Click" Margin="10,0,10,0"/>
+                    <Button x:Name="BtnApply" Content="✅ Apply &amp; Close" Width="130" Height="40" 
+                            Style="{StaticResource ModernButtonStyle}" 
+                            Click="BtnApply_Click" Margin="10,0,0,0" IsEnabled="False"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

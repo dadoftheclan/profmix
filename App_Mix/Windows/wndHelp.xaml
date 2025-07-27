@@ -1,0 +1,330 @@
+﻿<Window x:Class="App_Mix.Windows.wndHelp"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:App_Mix.Windows"
+        mc:Ignorable="d"
+        Title="ProfMix Help Center" Height="700" Width="950" MinHeight="600" MinWidth="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF1E1E1E">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF00FF90"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Lime" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00FF66"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00DD44"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern GroupBox Style -->
+        <Style x:Key="ModernGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" 
+                                    Background="#FF00FF90" 
+                                    CornerRadius="6,6,0,0" 
+                                    Padding="15,8">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Lime" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                                </Border.Effect>
+                                <ContentPresenter ContentSource="Header" 
+                                                TextBlock.Foreground="Black"
+                                                TextBlock.FontWeight="SemiBold"/>
+                            </Border>
+                            <Border Grid.Row="1" 
+                                    Background="#FF2D2D2D" 
+                                    CornerRadius="0,0,6,6" 
+                                    BorderBrush="#FF00FF66" 
+                                    BorderThickness="1,0,1,1">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.2"/>
+                                </Border.Effect>
+                                <ContentPresenter Margin="15"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ListBox Style -->
+        <Style x:Key="ModernListBoxStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF00FF66"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ScrollViewer Focusable="false" Padding="5">
+                                <StackPanel Margin="0" IsItemsHost="True"/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ListBoxItem Style -->
+        <Style x:Key="ModernListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF404040"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00FF90"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Glow Animation -->
+        <Storyboard x:Key="GreenGlowAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation 
+                Storyboard.TargetName="GlowEffect" 
+                Storyboard.TargetProperty="Opacity"
+                From="0.3" To="0.8" Duration="0:0:2"
+                AutoReverse="True"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource GreenGlowAnimation}"/>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel - Navigation -->
+        <Grid Grid.Column="0" Margin="0,0,15,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" CornerRadius="10" Margin="0,0,0,15" Padding="15">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF00FF90" Offset="0"/>
+                        <GradientStop Color="#FF00DD66" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect Color="Lime" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
+                </Border.Effect>
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="❓" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                    <TextBlock Text="Help Center" 
+                               FontSize="18" FontWeight="Bold" 
+                               Foreground="Black" 
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Get started quickly" 
+                               FontSize="10" 
+                               Foreground="#FF003300"
+                               HorizontalAlignment="Center"
+                               FontStyle="Italic"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Navigation Topics -->
+            <GroupBox Grid.Row="1" Header="📚 Help Topics" Style="{StaticResource ModernGroupBoxStyle}">
+                <ListBox x:Name="LstHelpTopics" 
+                         Style="{StaticResource ModernListBoxStyle}"
+                         ItemContainerStyle="{StaticResource ModernListBoxItemStyle}"
+                         SelectionChanged="LstHelpTopics_SelectionChanged">
+                    <ListBoxItem Content="🚀 Getting Started" Tag="getting-started"/>
+                    <ListBoxItem Content="🎤 Voice Recording" Tag="voice-recording"/>
+                    <ListBoxItem Content="🎵 Background Music" Tag="background-music"/>
+                    <ListBoxItem Content="🎛️ Audio Mixing" Tag="audio-mixing"/>
+                    <ListBoxItem Content="⚙️ Audio Profiles" Tag="audio-profiles"/>
+                    <ListBoxItem Content="🔊 Preview &amp; Playback" Tag="preview-playback"/>
+                    <ListBoxItem Content="💾 Output Settings" Tag="output-settings"/>
+                    <ListBoxItem Content="🏭 PBX Templates" Tag="pbx-templates"/>
+                    <ListBoxItem Content="⚠️ Troubleshooting" Tag="troubleshooting"/>
+                    <ListBoxItem Content="💡 Tips &amp; Tricks" Tag="tips-tricks"/>
+                </ListBox>
+            </GroupBox>
+
+            <!-- Close Button -->
+            <Button Grid.Row="2" x:Name="BtnClose" 
+                    Content="✅ Close Help" 
+                    Style="{StaticResource ModernButtonStyle}"
+                    Click="BtnClose_Click" 
+                    Height="40" 
+                    Margin="0,10,0,0"/>
+        </Grid>
+
+        <!-- Right Panel - Content Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Content Header with Glow Effect -->
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <!-- Green Glow Effect Background -->
+                <Border x:Name="GlowEffect" 
+                        CornerRadius="15" 
+                        Margin="-5">
+                    <Border.Background>
+                        <RadialGradientBrush Center="0.5,0.5" RadiusX="0.8" RadiusY="0.6">
+                            <GradientStop Color="#4000FF90" Offset="0"/>
+                            <GradientStop Color="#2000FF90" Offset="0.7"/>
+                            <GradientStop Color="#0000FF90" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <BlurEffect Radius="20"/>
+                    </Border.Effect>
+                </Border>
+
+                <!-- Main Header Content -->
+                <Border CornerRadius="10" Padding="20">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF00FF90" Offset="0"/>
+                            <GradientStop Color="#FF00DD66" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect Color="Lime" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock x:Name="TxtContentTitle" 
+                                   Text="Welcome to ProfMix" 
+                                   FontSize="24" FontWeight="Bold" 
+                                   Foreground="Black" 
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TxtContentSubtitle" 
+                                   Text="Professional voice over mixing made simple" 
+                                   FontSize="12" 
+                                   Foreground="#FF003300"
+                                   HorizontalAlignment="Center"
+                                   FontStyle="Italic"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Content Display Area -->
+            <ScrollViewer Grid.Row="1" 
+                          VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Disabled"
+                          Background="#FF2D2D2D"
+                          BorderBrush="#FF00FF66"
+                          BorderThickness="1"
+                          Padding="20">
+                <ScrollViewer.Effect>
+                    <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.2"/>
+                </ScrollViewer.Effect>
+
+                <StackPanel x:Name="ContentPanel">
+                    <!-- Default Welcome Content -->
+                    <Border Background="#FF404040" CornerRadius="8" Padding="20" Margin="0,0,0,15">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Lime" BlurRadius="4" ShadowDepth="0" Opacity="0.1"/>
+                        </Border.Effect>
+                        <TextBlock Foreground="White" FontSize="14" TextWrapping="Wrap" LineHeight="22">
+                            <Run FontWeight="Bold" FontSize="16" Foreground="#FF00FF90">Welcome to ProfMix Help!</Run>
+                            <LineBreak/><LineBreak/>
+                            <Run>ProfMix is a professional voice over mixing tool designed to help you create high-quality audio content for various applications including IVR systems, podcasts, presentations, and more.</Run>
+                            <LineBreak/><LineBreak/>
+                            <Run FontWeight="Bold" Foreground="#FF00FF90">Select a topic from the left panel to get started:</Run>
+                            <LineBreak/>
+                            <Run>• Learn the basics with our Getting Started guide</Run>
+                            <LineBreak/>
+                            <Run>• Understand how to work with voice recordings and background music</Run>
+                            <LineBreak/>
+                            <Run>• Master the audio mixing process</Run>
+                            <LineBreak/>
+                            <Run>• Configure audio profiles for different systems</Run>
+                            <LineBreak/>
+                            <Run>• Troubleshoot common issues</Run>
+                        </TextBlock>
+                    </Border>
+
+                    <Border Background="#FF00FF90" CornerRadius="8" Padding="15">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Lime" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                        </Border.Effect>
+                        <TextBlock Foreground="Black" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap">
+                            💡 Quick Tip: Use the navigation panel on the left to jump between different help topics quickly!
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>
