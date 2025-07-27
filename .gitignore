@@ -3,3 +3,5 @@
 /packages
 App_Mix/Resources/07272025_ProfMix_Main_Mixed.wav
 App_Mix/Resources/07272025_ProfMix_Splash_Mixed.wav
+/App_Install/bin
+/App_Install/obj

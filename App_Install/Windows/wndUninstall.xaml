@@ -1,0 +1,414 @@
+﻿<Window x:Class="App_Install.Windows.wndUninstall"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:App_Install.Windows"
+        mc:Ignorable="d"
+        Title="ProfMix Uninstaller" Height="700" Width="800"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF00FF90"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Lime" BlurRadius="10" ShadowDepth="0" Opacity="0.8"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00FF66"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF00DD44"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#FF666666"/>
+                                <Setter Property="Foreground" Value="#FFAAAAAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Danger Button Style -->
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FFFF4444"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFFF6666"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FFDD2222"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Cancel Button Style -->
+        <Style x:Key="CancelButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#FF666666"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF888888"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF444444"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Progress Bar Style -->
+        <Style x:Key="ModernProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="#FFFF4444"/>
+            <Setter Property="BorderBrush" Value="#FFFF6666"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border x:Name="TemplateRoot"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Red" BlurRadius="6" ShadowDepth="0" Opacity="0.4"/>
+                            </Border.Effect>
+                            <Grid ClipToBounds="True">
+                                <Rectangle x:Name="PART_Track"/>
+                                <Grid x:Name="PART_Indicator" HorizontalAlignment="Left">
+                                    <Rectangle x:Name="Indicator"
+                                             Fill="{TemplateBinding Foreground}"
+                                             RadiusX="12"
+                                             RadiusY="12"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- CheckBox Style -->
+        <Style x:Key="ModernCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="CheckBorder"
+                                    Width="18" Height="18"
+                                    Background="#FF2D2D2D"
+                                    BorderBrush="#FFFF6666"
+                                    BorderThickness="2"
+                                    CornerRadius="3"
+                                    Margin="0,0,8,0">
+                                <Path x:Name="CheckMark"
+                                      Data="M 2 6 L 6 10 L 14 2"
+                                      Stroke="#FFFF4444"
+                                      StrokeThickness="2"
+                                      Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckBorder" Property="Background" Value="#FF330000"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="#FFFF4444"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Glow Pulse Animation -->
+        <Storyboard x:Key="PulseBorderGlow" RepeatBehavior="Forever" AutoReverse="True">
+            <DoubleAnimation Storyboard.TargetName="GlowEffect"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.4" To="1.0" Duration="0:0:1.5" />
+        </Storyboard>
+    </Window.Resources>
+
+    <Border x:Name="BorderElement"
+            BorderThickness="4"
+            CornerRadius="10"
+            Background="#FF1E1E1E"
+            BorderBrush="#FF4444">
+        <Border.Effect>
+            <DropShadowEffect x:Name="GlowEffect"
+                              Color="Red"
+                              BlurRadius="25"
+                              ShadowDepth="0"
+                              Opacity="0.6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header with Close Button -->
+            <Grid Grid.Row="0" Background="#FF2D2D2D" Height="40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                          Text="ProfMix Uninstaller" 
+                          VerticalAlignment="Center" 
+                          Margin="20,0"
+                          FontWeight="SemiBold"
+                          Foreground="#FFFF4444"/>
+
+                <Button Grid.Column="1" 
+                        x:Name="BtnClose"
+                        Content="✕" 
+                        Width="40" Height="40"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="#FFAAAAAA"
+                        FontSize="16"
+                        Cursor="Hand"
+                        Click="BtnClose_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FFFF4444"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+
+            <!-- Main Content Area -->
+            <StackPanel Grid.Row="1" Margin="30,50,30,30" VerticalAlignment="Center">
+
+                <!-- Logo and Title -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,25">
+                    <TextBlock Text="🗑️ Uninstall ProfMix" 
+                               FontSize="28" 
+                               FontWeight="Bold" 
+                               Foreground="#FFFF4444"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,5">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Red" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <TextBlock Text="Remove ProfMix from your computer" 
+                               FontSize="12" 
+                               Foreground="#FFAAAAAA"
+                               HorizontalAlignment="Center"
+                               FontStyle="Italic"/>
+                </StackPanel>
+
+                <!-- Installation Information -->
+                <Border x:Name="InfoPanel"
+                        Background="#FF2D2D2D" 
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Red" BlurRadius="6" ShadowDepth="0" Opacity="0.3"/>
+                    </Border.Effect>
+
+                    <StackPanel>
+                        <TextBlock Text="Installation Details" 
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  Foreground="White"
+                                  Margin="0,0,0,15"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Location:" Foreground="#FFCCCCCC" Margin="0,0,15,5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtInstallPath" Text="C:\Program Files\ProfMix" Foreground="White" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" Foreground="#FFCCCCCC" Margin="0,0,15,5"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtVersion" Text="1.0.0" Foreground="White" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Size:" Foreground="#FFCCCCCC" Margin="0,0,15,5"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TxtSize" Text="Unknown" Foreground="White" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Installed:" Foreground="#FFCCCCCC" Margin="0,0,15,0"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="TxtInstallDate" Text="Unknown" Foreground="White"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Uninstall Options -->
+                <Border x:Name="OptionsPanel"
+                        Background="#FF2D2D2D" 
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Red" BlurRadius="6" ShadowDepth="0" Opacity="0.3"/>
+                    </Border.Effect>
+
+                    <StackPanel>
+                        <TextBlock Text="What to Remove" 
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  Foreground="White"
+                                  Margin="0,0,0,15"/>
+
+                        <CheckBox x:Name="ChkRemoveFiles"
+                                 Content="Remove all application files"
+                                 Style="{StaticResource ModernCheckBoxStyle}"
+                                 IsChecked="True"
+                                 IsEnabled="False"
+                                 Margin="0,0,0,8"/>
+
+                        <CheckBox x:Name="ChkRemoveShortcuts"
+                                 Content="Remove desktop and Start Menu shortcuts"
+                                 Style="{StaticResource ModernCheckBoxStyle}"
+                                 IsChecked="True"
+                                 Margin="0,0,0,8"/>
+
+                        <CheckBox x:Name="ChkRemoveRegistry"
+                                 Content="Remove registry entries and file associations"
+                                 Style="{StaticResource ModernCheckBoxStyle}"
+                                 IsChecked="True"
+                                 Margin="0,0,0,8"/>
+
+                        <CheckBox x:Name="ChkKeepProfiles"
+                                 Content="Keep user profiles and settings"
+                                 Style="{StaticResource ModernCheckBoxStyle}"
+                                 IsChecked="True"
+                                 Margin="0,0,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Progress Section (Hidden initially) -->
+                <Border x:Name="ProgressSection"
+                        Background="#FF2D2D2D" 
+                        CornerRadius="8" 
+                        Padding="20"
+                        Margin="0,0,0,20"
+                        Visibility="Collapsed">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Red" BlurRadius="6" ShadowDepth="0" Opacity="0.3"/>
+                    </Border.Effect>
+
+                    <StackPanel>
+                        <TextBlock x:Name="ProgressTitle"
+                                  Text="Uninstalling ProfMix..."
+                                  FontSize="16"
+                                  FontWeight="SemiBold"
+                                  Foreground="White"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,15"/>
+
+                        <ProgressBar x:Name="UninstallProgress"
+                                    Style="{StaticResource ModernProgressBarStyle}"
+                                    Value="0"
+                                    Margin="0,0,0,15"/>
+
+                        <TextBlock x:Name="ProgressDetails"
+                                  Text="Preparing uninstallation..."
+                                  FontSize="12"
+                                  Foreground="#FFCCCCCC"
+                                  HorizontalAlignment="Center"/>
+
+                        <TextBlock x:Name="ProgressPercentage"
+                                  Text="0%"
+                                  FontSize="14"
+                                  FontWeight="Bold"
+                                  Foreground="#FFFF4444"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Action Buttons -->
+                <StackPanel x:Name="ActionButtons"
+                           Orientation="Horizontal" 
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,40">
+
+                    <Button x:Name="BtnUninstall" 
+                            Content="🗑️ Uninstall ProfMix" 
+                            Style="{StaticResource DangerButtonStyle}"
+                            Width="180"
+                            Height="45"
+                            Margin="0,0,15,0"
+                            Click="BtnUninstall_Click"/>
+
+                    <Button x:Name="BtnCancel" 
+                            Content="Cancel" 
+                            Style="{StaticResource CancelButtonStyle}"
+                            Width="120"
+                            Height="45"
+                            Click="BtnCancel_Click"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Footer -->
+            <Border Grid.Row="2" 
+                    Background="#FF2D2D2D" 
+                    Height="35"
+                    CornerRadius="0,0,6,6">
+                <TextBlock Text="© 2025 DadOfTheClan - Licensed under Dad's License v1.1" 
+                          VerticalAlignment="Center" 
+                          HorizontalAlignment="Center"
+                          FontSize="10"
+                          Foreground="#FF666666"/>
+            </Border>
+        </Grid>
+
+        <!-- Triggers for animations -->
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard Storyboard="{StaticResource PulseBorderGlow}" />
+            </EventTrigger>
+        </Border.Triggers>
+    </Border>
+</Window>
