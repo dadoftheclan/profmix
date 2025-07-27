@@ -59,5 +59,23 @@ namespace App_Mix.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream ProfMix_Main_Mixed {
+            get {
+                return ResourceManager.GetStream("ProfMix_Main_Mixed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream ProfMix_Splash_Mixed {
+            get {
+                return ResourceManager.GetStream("ProfMix_Splash_Mixed", resourceCulture);
+            }
+        }
     }
 }

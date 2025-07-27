@@ -72,7 +72,7 @@ namespace App_Mix
                 splash.Show();
 
                 // Introduce a delay to allow the splash screen to be visible for a moment.
-                await Task.Delay(2000); // 2-second delay.
+                await Task.Delay(11000); // 2-second delay.
 
                 splash.Close(); // Close the splash screen.
 

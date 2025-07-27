@@ -7,6 +7,9 @@ using NAudio.Wave;
 using NAudio.MediaFoundation;
 using App_Mix.Systems;
 using App_Mix.Models;
+using System.Reflection;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace App_Mix.Windows
 {
@@ -14,7 +17,7 @@ namespace App_Mix.Windows
     /// Interaction logic for wndMix.xaml. This window provides the main user interface
     /// for selecting voice and music audio files, setting mixing parameters (volume, offset, buffer),
     /// previewing audio, and initiating the audio mixing process. It also manages user profiles
-    /// for audio settings.
+    /// for audio settings and uses the selected profile to determine output format.
     /// </summary>
     public partial class wndMix : Window
     {
@@ -55,6 +58,11 @@ namespace App_Mix.Windows
         private string currentPlayingFile;
 
         /// <summary>
+        /// Temporary file path for the extracted main theme audio resource.
+        /// </summary>
+        private string tempMainThemeFile;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="wndMix"/> class.
         /// This constructor sets up the UI components and initializes necessary audio libraries
         /// and user profile management.
@@ -68,6 +76,9 @@ namespace App_Mix.Windows
 
             // Initializes and loads user profiles for audio settings.
             InitializeProfiles();
+
+            // Subscribe to the Loaded event to play main theme when the window appears
+            this.Loaded += WndMix_Loaded;
         }
 
         /// <summary>
@@ -128,6 +139,30 @@ namespace App_Mix.Windows
         private void OnProfilesChanged(object sender, EventArgs e)
         {
             RefreshProfileDropdown();
+        }
+
+        /// <summary>
+        /// Event handler for when the main window is fully loaded.
+        /// Extracts and plays the embedded main theme audio resource.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Event arguments.</param>
+        private async void WndMix_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool success = await sysPlayback.Instance.PlayEmbeddedResourceAsync(
+                    "ProfMix_Main_Mixed.wav", 0.5f);
+
+                if (!success)
+                {
+                    System.Diagnostics.Debug.WriteLine("Failed to play main theme");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Main theme error: {ex.Message}");
+            }
         }
 
         #region File Selection Events
@@ -294,7 +329,8 @@ namespace App_Mix.Windows
             if (CmbProfiles.SelectedItem is mdlProfile selectedProfile)
             {
                 sysState.CurrentProfile = selectedProfile;
-                sysInteract.ShowInfo("Profile Selected", $"Using profile: {selectedProfile.Name}");
+                sysInteract.ShowInfo("Profile Selected",
+                    $"Using profile: {selectedProfile.Name}\nFormat: {selectedProfile.FormatDisplay}\nMax size: {selectedProfile.MaxSizeDisplay}");
             }
         }
 
@@ -326,6 +362,7 @@ namespace App_Mix.Windows
         /// Event handler for the "Mix Audio" button click.
         /// Gathers all necessary mixing parameters from the UI, performs validation,
         /// and then initiates the audio mixing process using the <see cref="sysMixer"/> system.
+        /// Now properly passes the selected profile to determine output format.
         /// Displays progress, success, or error notifications to the user.
         /// </summary>
         /// <param name="sender">The source of the event (BtnMix).</param>
@@ -334,6 +371,15 @@ namespace App_Mix.Windows
         {
             // Ensures any active audio playback is stopped before starting a new mixing operation.
             StopAudioAndResetButtons();
+
+            // Retrieves the currently active audio profile from the system state.
+            var currentProfile = sysState.CurrentProfile;
+            if (currentProfile == null)
+            {
+                // Warns the user if no profile is selected, as the output format depends on it.
+                sysInteract.ShowWarning("No Profile Selected", "No audio profile selected. Please select a profile first.");
+                return; // Aborts the mixing process.
+            }
 
             // Creates a MixingSettings object, populating it with values from the UI controls.
             var mixingSettings = new sysMixer.MixingSettings
@@ -345,17 +391,10 @@ namespace App_Mix.Windows
                 VoiceVolume = (float)SliderVoiceVolume.Value / 100,
                 MusicVolume = (float)SliderMusicVolume.Value / 100,
                 MusicOffsetSeconds = SliderMusicOffset.Value,
-                BufferSeconds = SliderBufferLength.Value
+                BufferSeconds = SliderBufferLength.Value,
+                // **IMPORTANT: Pass the selected profile to the mixer!**
+                OutputProfile = currentProfile
             };
-
-            // Retrieves the currently active audio profile from the system state.
-            var currentProfile = sysState.CurrentProfile;
-            if (currentProfile == null)
-            {
-                // Warns the user if no profile is selected, as mixing settings might depend on it.
-                sysInteract.ShowWarning("No Profile Selected", "No audio profile selected. Please select a profile first.");
-                return; // Aborts the mixing process.
-            }
 
             // Performs basic validation to ensure all required file paths are set.
             if (string.IsNullOrEmpty(mixingSettings.VoiceFilePath) ||
@@ -366,7 +405,7 @@ namespace App_Mix.Windows
                 return; // Aborts the mixing process.
             }
 
-            // Checks the estimated output file size against a limit (e.g., for 3CX systems).
+            // Checks the estimated output file size against the profile's limit.
             TimeSpan estimatedDuration;
             if (sysMixer.IsValidAudioFile(mixingSettings.VoiceFilePath))
             {
@@ -374,24 +413,37 @@ namespace App_Mix.Windows
                 estimatedDuration = sysMixer.GetAudioDuration(mixingSettings.VoiceFilePath)
                     .Add(TimeSpan.FromSeconds(mixingSettings.BufferSeconds));
 
-                // If the estimated file size exceeds the limit, prompts the user for confirmation.
-                if (!sysMixer.CheckFileSizeForCX(estimatedDuration, out long estimatedMB))
+                // Use the new profile-aware file size checking method
+                if (!sysMixer.CheckFileSizeForProfile(estimatedDuration, currentProfile, out long estimatedMB))
                 {
                     var continueAnyway = sysInteract.ShowConfirmation(
                         "File Size Warning",
-                        $"The estimated output file size will be {estimatedMB}MB, which exceeds 3CX's 10MB limit.\n\nDo you want to continue anyway?");
+                        $"The estimated output file size will be {estimatedMB}MB, which exceeds the '{currentProfile.Name}' profile's {currentProfile.MaxFileSizeMB}MB limit.\n\n" +
+                        $"Output format: {currentProfile.FormatDisplay}\n\n" +
+                        $"Do you want to continue anyway?");
 
                     if (!continueAnyway)
                         return; // Aborts if the user chooses not to continue.
+                }
+                else
+                {
+                    // Show a preview of what will be created
+                    sysInteract.ShowInfo("Mixing Preview",
+                        $"Ready to mix with '{currentProfile.Name}' profile\n" +
+                        $"Output format: {currentProfile.FormatDisplay}\n" +
+                        $"Estimated duration: {estimatedDuration:mm\\:ss}\n" +
+                        $"Estimated size: {estimatedMB}MB (limit: {currentProfile.MaxFileSizeMB}MB)");
                 }
             }
 
             try
             {
                 // Displays a progress notification while the mixing operation is in progress.
-                var progressNotification = sysInteract.ShowProgress("Mixing Audio", "Processing audio files, please wait...");
+                var progressNotification = sysInteract.ShowProgress("Mixing Audio",
+                    $"Processing audio files using '{currentProfile.Name}' profile...\n" +
+                    $"Output format: {currentProfile.FormatDisplay}");
 
-                // Calls the core mixing logic in the sysMixer system.
+                // Calls the core mixing logic in the sysMixer system with the profile.
                 var mixingResult = sysMixer.MixAudioFiles(mixingSettings);
 
                 // Closes the progress notification once mixing is complete (or an error occurs).
@@ -399,12 +451,17 @@ namespace App_Mix.Windows
 
                 if (mixingResult.Success)
                 {
-                    // If mixing was successful, displays a success notification with details.
+                    // If mixing was successful, displays a success notification with profile details.
                     var fileSizeMB = mixingResult.FileSizeBytes / (1024 * 1024); // Converts bytes to megabytes.
-                    sysInteract.NotifyMixingComplete(
-                        System.IO.Path.GetFileName(outputFilePath), // Displays just the file name.
-                        currentProfile.FormatDisplay, // Shows the audio format from the current profile.
-                        fileSizeMB);
+
+                    // Enhanced success message showing the profile that was used
+                    sysInteract.ShowSuccess("Mixing Complete!",
+                        $"Audio mixed successfully!\n\n" +
+                        $"Output file: {Path.GetFileName(outputFilePath)}\n" +
+                        $"Profile used: {mixingResult.UsedProfile.Name}\n" +
+                        $"Format: {mixingResult.UsedProfile.FormatDisplay}\n" +
+                        $"File size: {fileSizeMB}MB (limit: {mixingResult.UsedProfile.MaxFileSizeMB}MB)\n" +
+                        $"Duration: {mixingResult.TotalDuration:mm\\:ss}");
 
                     // Enables the preview button for the mixed file.
                     BtnPreviewMixed.IsEnabled = true;
@@ -412,13 +469,17 @@ namespace App_Mix.Windows
                 else
                 {
                     // If mixing failed, displays an error notification with the error message.
-                    sysInteract.ShowError("Mixing Failed", mixingResult.ErrorMessage);
+                    sysInteract.ShowError("Mixing Failed",
+                        $"Failed to mix audio files:\n\n{mixingResult.ErrorMessage}\n\n" +
+                        $"Profile: {currentProfile.Name} ({currentProfile.FormatDisplay})");
                 }
             }
             catch (Exception ex)
             {
                 // Catches any unexpected exceptions during the mixing process and displays an error.
-                sysInteract.ShowError("Unexpected Error", $"An unexpected error occurred during mixing: {ex.Message}");
+                sysInteract.ShowError("Unexpected Error",
+                    $"An unexpected error occurred during mixing:\n\n{ex.Message}\n\n" +
+                    $"Profile: {currentProfile.Name} ({currentProfile.FormatDisplay})");
             }
         }
 
@@ -597,18 +658,29 @@ namespace App_Mix.Windows
         /// <param name="e">Event arguments.</param>
         protected override void OnClosed(EventArgs e)
         {
-            // Stops any active audio playback and cleans up audio resources.
-            StopAudioAndResetButtons();
-            // Shuts down the MediaFoundation API, releasing its resources.
-            MediaFoundationApi.Shutdown();
+            try
+            {
 
-            // Unsubscribes from sysState events to prevent the window from holding references
-            // after it has been closed, which could lead to memory leaks.
-            sysState.CurrentProfileChanged -= OnCurrentProfileChanged;
-            sysState.ProfilesChanged -= OnProfilesChanged;
+                // Stop any other active audio playback and clean up audio resources
+                StopAudioAndResetButtons();
 
-            // Calls the base class's OnClosed method to ensure proper WPF window closing behavior.
-            base.OnClosed(e);
+                // Shut down the MediaFoundation API, releasing its resources
+                MediaFoundationApi.Shutdown();
+
+                // Unsubscribe from sysState events to prevent the window from holding references
+                // after it has been closed, which could lead to memory leaks
+                sysState.CurrentProfileChanged -= OnCurrentProfileChanged;
+                sysState.ProfilesChanged -= OnProfilesChanged;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during window cleanup: {ex.Message}");
+            }
+            finally
+            {
+                // Calls the base class's OnClosed method to ensure proper WPF window closing behavior
+                base.OnClosed(e);
+            }
         }
 
         #endregion

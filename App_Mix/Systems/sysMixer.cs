@@ -8,6 +8,7 @@ using NAudio.Wave; // Core NAudio library for audio processing.
 using NAudio.Wave.SampleProviders; // Provides sample providers for audio manipulation.
 using NAudio.MediaFoundation; // Required for MP3 support and advanced audio format conversions.
 using App_Mix.Providers; // Custom NAudio sample providers (e.g., proFadeOut, proLooping).
+using App_Mix.Models; // For mdlProfile model.
 
 namespace App_Mix.Systems
 {
@@ -15,7 +16,7 @@ namespace App_Mix.Systems
     /// Provides core functionality for mixing voice and music audio files.
     /// This class handles audio file reading, resampling, volume adjustment,
     /// offsetting, looping, fading, and writing the final mixed output.
-    /// It is designed to produce audio files compatible with specific telephony systems like 3CX.
+    /// It uses profile specifications to determine the output format and quality.
     /// </summary>
     public class sysMixer
     {
@@ -63,6 +64,12 @@ namespace App_Mix.Systems
             /// This period is typically used for music fade-out. Default is 10 seconds.
             /// </summary>
             public double BufferSeconds { get; set; } = 10;
+
+            /// <summary>
+            /// Gets or sets the audio profile that defines the output format specifications.
+            /// If null, defaults to 8kHz, 16-bit, mono for backward compatibility.
+            /// </summary>
+            public mdlProfile OutputProfile { get; set; }
         }
 
         /// <summary>
@@ -100,41 +107,64 @@ namespace App_Mix.Systems
             /// Gets or sets a human-readable formatted message summarizing the mixing result.
             /// </summary>
             public string FormattedMessage { get; set; }
+
+            /// <summary>
+            /// Gets or sets the audio profile that was used for the mixing operation.
+            /// </summary>
+            public mdlProfile UsedProfile { get; set; }
         }
 
         /// <summary>
-        /// Estimates the final output file size for an audio file with a given duration,
-        /// assuming a specific format (8kHz, 16-bit, mono WAV, commonly used for 3CX).
+        /// Estimates the final output file size for an audio file with a given duration and profile specifications.
         /// </summary>
         /// <param name="duration">The total duration of the audio content.</param>
+        /// <param name="profile">The audio profile defining sample rate, bit depth, and channels. If null, uses default 8kHz/16-bit/mono.</param>
         /// <returns>The estimated file size in bytes.</returns>
-        public static long EstimateOutputFileSize(TimeSpan duration)
+        public static long EstimateOutputFileSize(TimeSpan duration, mdlProfile profile = null)
         {
-            // Calculation for 8kHz sample rate, 16-bit depth, mono channel WAV file:
-            // 8000 samples/second * 2 bytes/sample (for 16-bit) * 1 channel (mono) = 16000 bytes/second.
-            long dataSize = (long)(duration.TotalSeconds * 8000 * 2 * 1);
+            // Use profile specifications or fall back to defaults
+            int sampleRate = profile?.SampleRate ?? 8000;
+            int bitDepth = profile?.BitDepth ?? 16;
+            int channels = profile?.Channels ?? 1;
+
+            // Calculate: samples/second * bytes/sample * channels * duration
+            long dataSize = (long)(duration.TotalSeconds * sampleRate * (bitDepth / 8) * channels);
             // Add a typical WAV header size (44 bytes).
             return dataSize + 44;
         }
 
         /// <summary>
-        /// Checks if the estimated audio file size exceeds the 10MB limit often imposed by 3CX systems.
+        /// Checks if the estimated audio file size exceeds the specified profile's maximum file size limit.
+        /// </summary>
+        /// <param name="targetDuration">The target duration of the mixed audio file.</param>
+        /// <param name="profile">The audio profile containing the maximum file size limit.</param>
+        /// <param name="estimatedMB">An output parameter that will contain the estimated file size in megabytes.</param>
+        /// <returns><c>true</c> if the estimated size is within the profile's limit; otherwise, <c>false</c>.</returns>
+        public static bool CheckFileSizeForProfile(TimeSpan targetDuration, mdlProfile profile, out long estimatedMB)
+        {
+            long estimatedSize = EstimateOutputFileSize(targetDuration, profile);
+            estimatedMB = estimatedSize / (1024 * 1024); // Convert bytes to megabytes.
+
+            int maxSizeMB = profile?.MaxFileSizeMB ?? 10; // Default to 10MB if no profile
+            return estimatedMB <= maxSizeMB;
+        }
+
+        /// <summary>
+        /// Legacy method for backward compatibility. Checks against a 10MB limit using default format.
         /// </summary>
         /// <param name="targetDuration">The target duration of the mixed audio file.</param>
         /// <param name="estimatedMB">An output parameter that will contain the estimated file size in megabytes.</param>
         /// <returns><c>true</c> if the estimated size is less than or equal to 10MB; otherwise, <c>false</c>.</returns>
         public static bool CheckFileSizeForCX(TimeSpan targetDuration, out long estimatedMB)
         {
-            long estimatedSize = EstimateOutputFileSize(targetDuration);
-            estimatedMB = estimatedSize / (1024 * 1024); // Convert bytes to megabytes.
-            return estimatedMB <= 10; // Check against the 10MB limit.
+            return CheckFileSizeForProfile(targetDuration, null, out estimatedMB);
         }
 
         /// <summary>
         /// Validates the essential mixing settings provided by the user.
-        /// Checks if file paths are provided and if the input files actually exist.
+        /// Checks if file paths are provided, if the input files actually exist, and if the profile is valid.
         /// </summary>
-        /// <param name="settings">The <see cref="MixingSettings"/> object containing the paths.</param>
+        /// <param name="settings">The <see cref="MixingSettings"/> object containing the paths and profile.</param>
         /// <returns>A string containing an error message if validation fails; otherwise, <c>null</c>.</returns>
         public static string ValidateSettings(MixingSettings settings)
         {
@@ -149,6 +179,14 @@ namespace App_Mix.Systems
             // Check if output file path is specified.
             if (string.IsNullOrEmpty(settings.OutputFilePath))
                 return "Output file path is not specified.";
+
+            // Validate the output profile if provided
+            if (settings.OutputProfile != null)
+            {
+                var profileErrors = settings.OutputProfile.Validate();
+                if (profileErrors.Any())
+                    return $"Invalid output profile: {string.Join(", ", profileErrors)}";
+            }
 
             return null; // No validation errors found.
         }
@@ -184,9 +222,8 @@ namespace App_Mix.Systems
 
         /// <summary>
         /// The main method for mixing voice and music audio files.
-        /// It takes mixing settings, processes the audio streams (resampling, applying volumes,
-        /// offsetting, fading, looping), and writes the combined output to a WAV file.
-        /// The output format is standardized to 8kHz, 16-bit, mono PCM, commonly required by PBX systems.
+        /// It takes mixing settings (including output profile), processes the audio streams (resampling, applying volumes,
+        /// offsetting, fading, looping), and writes the combined output to a WAV file using the profile's specifications.
         /// </summary>
         /// <param name="settings">A <see cref="MixingSettings"/> object containing all parameters for mixing.</param>
         /// <returns>A <see cref="MixingResult"/> object indicating success or failure and providing details about the output.</returns>
@@ -196,7 +233,7 @@ namespace App_Mix.Systems
 
             try
             {
-                // Perform initial validation of file paths.
+                // Perform initial validation of file paths and settings.
                 string validationError = ValidateSettings(settings);
                 if (!string.IsNullOrEmpty(validationError))
                 {
@@ -204,6 +241,16 @@ namespace App_Mix.Systems
                     result.ErrorMessage = validationError;
                     return result; // Return immediately if basic settings are invalid.
                 }
+
+                // Determine output format from profile or use defaults
+                mdlProfile outputProfile = settings.OutputProfile ?? CreateDefaultProfile();
+                result.UsedProfile = outputProfile;
+
+                // Create target format from profile specifications
+                var targetFormat = new WaveFormat(
+                    outputProfile.SampleRate,
+                    outputProfile.BitDepth,
+                    outputProfile.Channels);
 
                 // Use 'using' blocks to ensure AudioFileReader resources are properly disposed.
                 using (var voiceReader = new AudioFileReader(settings.VoiceFilePath))
@@ -228,10 +275,18 @@ namespace App_Mix.Systems
                         return result; // Return immediately if music offset is invalid.
                     }
 
-                    // Resample both voice and music streams to the target format (8kHz, 16-bit, mono).
-                    // MediaFoundationResampler handles format conversions (sample rate, bit depth, channels).
-                    var voiceResampled = new MediaFoundationResampler(voiceReader, new WaveFormat(8000, 16, 1));
-                    var musicResampled = new MediaFoundationResampler(musicReader, new WaveFormat(8000, 16, 1));
+                    // Check file size against profile limits
+                    if (!CheckFileSizeForProfile(targetDuration, outputProfile, out long estimatedMB))
+                    {
+                        result.Success = false;
+                        result.ErrorMessage = $"Estimated file size ({estimatedMB}MB) exceeds profile maximum of {outputProfile.MaxFileSizeMB}MB. " +
+                                            $"Please reduce the duration or choose a profile with a higher file size limit.";
+                        return result;
+                    }
+
+                    // Resample both voice and music streams to the target format specified by the profile.
+                    var voiceResampled = new MediaFoundationResampler(voiceReader, targetFormat);
+                    var musicResampled = new MediaFoundationResampler(musicReader, targetFormat);
 
                     // Convert the resampled streams to ISampleProvider, which is suitable for mixing and effects.
                     var voiceSampleProvider = voiceResampled.ToSampleProvider();
@@ -262,25 +317,64 @@ namespace App_Mix.Systems
                     }
 
                     // Create a MixingSampleProvider to combine the voice and music streams.
-                    // The mixer's format must match the resampled input format (8kHz, mono, float for internal processing).
-                    var mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(8000, 1));
+                    // The mixer's format must match the target format for processing.
+                    var mixer = new MixingSampleProvider(
+                        WaveFormat.CreateIeeeFloatWaveFormat(
+                            outputProfile.SampleRate,
+                            outputProfile.Channels));
                     mixer.AddMixerInput(voiceVolumeSampleProvider); // Add the voice track to the mixer.
                     mixer.AddMixerInput(finalMusicProvider); // Add the processed music track to the mixer.
 
                     // Write the mixed audio to the output file.
-                    // WaveFileWriter.CreateWaveFile16 ensures the output is a 16-bit WAV file.
-                    WaveFileWriter.CreateWaveFile16(settings.OutputFilePath, mixer);
+                    // Use the appropriate method based on the profile's bit depth
+                    if (outputProfile.BitDepth == 16)
+                    {
+                        // Use the built-in 16-bit method
+                        WaveFileWriter.CreateWaveFile16(settings.OutputFilePath, mixer);
+                    }
+                    else
+                    {
+                        // For other bit depths (8, 24, 32), convert sample provider to wave provider
+                        // and use the target format from the profile
+                        ISampleProvider outputSamples = mixer;
+
+                        // Create the exact wave format we want for output
+                        var outputFormat = new WaveFormat(
+                            outputProfile.SampleRate,
+                            outputProfile.BitDepth,
+                            outputProfile.Channels);
+
+                        // Convert sample provider to wave provider with the target format
+                        IWaveProvider outputWaveProvider;
+
+                        if (outputProfile.BitDepth == 24)
+                        {
+                            outputWaveProvider = new SampleToWaveProvider24(outputSamples);
+                        }
+                        else if (outputProfile.BitDepth == 32)
+                        {
+                            outputWaveProvider = new SampleToWaveProvider(outputSamples);
+                        }
+                        else // 8-bit or other
+                        {
+                            // Convert to 16-bit first, then let WaveFileWriter handle the conversion
+                            outputWaveProvider = new SampleToWaveProvider16(outputSamples);
+                        }
+
+                        // Write the wave file
+                        WaveFileWriter.CreateWaveFile(settings.OutputFilePath, outputWaveProvider);
+                    }
 
                     // Get information about the newly created output file.
                     var fileInfo = new FileInfo(settings.OutputFilePath);
                     result.FileSizeBytes = fileInfo.Length;
                     long fileSizeInMB = fileInfo.Length / (1024 * 1024); // Convert file size to MB.
 
-                    // Prepare a warning message if the file size exceeds the 3CX limit.
+                    // Prepare a warning message if the file size exceeds the profile's limit.
                     string sizeWarning = "";
-                    if (fileSizeInMB > 10)
+                    if (fileSizeInMB > outputProfile.MaxFileSizeMB)
                     {
-                        sizeWarning = $"\n⚠️ WARNING: File size ({fileSizeInMB}MB) exceeds 3CX's 10MB limit!";
+                        sizeWarning = $"\n⚠️ WARNING: File size ({fileSizeInMB}MB) exceeds profile limit of {outputProfile.MaxFileSizeMB}MB!";
                     }
 
                     // Prepare informational strings about music offset and buffer.
@@ -288,9 +382,9 @@ namespace App_Mix.Systems
                     string bufferInfo = settings.BufferSeconds > 0 ? $"\nBuffer with fade-out: {settings.BufferSeconds:F0}s" : "\nNo buffer (music stops with voice)";
 
                     // Construct the detailed formatted message for the mixing result.
-                    result.FormattedMessage = $"Files mixed successfully for 3CX!\n\n" +
-                                              $"Format: WAV (PCM, 8kHz, 16-bit, Mono)\n" +
-                                              $"File size: {fileSizeInMB}MB\n" +
+                    result.FormattedMessage = $"Files mixed successfully using '{outputProfile.Name}' profile!\n\n" +
+                                              $"Format: {outputProfile.FullFormatDescription}\n" +
+                                              $"File size: {fileSizeInMB}MB (limit: {outputProfile.MaxFileSizeMB}MB)\n" +
                                               $"Total output duration: {targetDuration:mm\\:ss}\n" +
                                               $"Voice duration: {voiceDuration:mm\\:ss}{offsetInfo}{bufferInfo}{sizeWarning}";
 
@@ -305,6 +399,25 @@ namespace App_Mix.Systems
                 result.ErrorMessage = $"Error mixing files: {ex.Message}";
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Creates a default audio profile for backward compatibility when no profile is specified.
+        /// Uses the legacy 8kHz, 16-bit, mono format commonly used for PBX systems.
+        /// </summary>
+        /// <returns>A default <see cref="mdlProfile"/> with legacy specifications.</returns>
+        private static mdlProfile CreateDefaultProfile()
+        {
+            return new mdlProfile
+            {
+                Name = "Default (Legacy)",
+                Description = "Default format for backward compatibility",
+                SampleRate = 8000,
+                BitDepth = 16,
+                Channels = 1,
+                MaxFileSizeMB = 10,
+                TemplateSource = "Default"
+            };
         }
 
         /// <summary>

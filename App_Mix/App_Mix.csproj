@@ -50,8 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>ProfMix_Icon_Reversed.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Win32.Registry, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -114,6 +113,7 @@
     <Compile Include="Providers\proLooping.cs" />
     <Compile Include="Systems\sysInteract.cs" />
     <Compile Include="Systems\sysMixer.cs" />
+    <Compile Include="Systems\sysPlayback.cs" />
     <Compile Include="Systems\sysState.cs" />
     <Compile Include="Windows\wndException.xaml.cs">
       <DependentUpon>wndException.xaml</DependentUpon>
@@ -133,16 +133,8 @@
     <Compile Include="Windows\wndSplash.xaml.cs">
       <DependentUpon>wndSplash.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\wndException.xaml">
@@ -220,6 +212,21 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\07272025_ProfMix_Main_Mixed.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\07272025_ProfMix_Splash_Mixed.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ProfMix_Splash_Mixed.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ProfMix_Main_Mixed.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ProfMix_Icon_Reversed.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:App_Mix.Windows"
         mc:Ignorable="d"
-        Title="Audio Mixer Pro" Height="600" Width="900" MinHeight="500" MinWidth="700"
+        Title="ProfMix" Height="600" Width="900" MinHeight="500" MinWidth="700"
         WindowStartupLocation="CenterScreen"
         Background="#FF1E1E1E">
 
